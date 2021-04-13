@@ -17,18 +17,20 @@ namespace TrainStation
         public Dictionary<Guid, Train> Trains = new Dictionary<Guid, Train>();
         public Dictionary<Guid, ISelectable> Selectables = new Dictionary<Guid, ISelectable>();
 
-        public void AddNode(string name, Point location)
+        public Node AddNode(string name, Point location)
         {
             Node node = new Node(name, location);
             Nodes.Add(node.Guid, node);
             Selectables.Add(node.Guid, node);
+            return node;
         }
 
-        public void AddTrain(string name, Node start, float speed)
+        public Train AddTrain(string name, Node start, float speed)
         {
             Train train = new Train(name, start, speed);
             Trains.Add(train.Guid, train);
             Selectables.Add(train.Guid, train);
+            return train;
         }
 
         public void Connect(Node a, Node b)
@@ -88,5 +90,21 @@ namespace TrainStation
             type = EClickableItem.None;
             return null;
         }
+
+        public void Clear()
+        {
+            Cancel();
+            Trains.Clear();
+            Nodes.Clear();
+            Rails.Clear();
+        }
+    }
+
+
+    enum EClickableItem
+    {
+        None,
+        Node,
+        Train
     }
 }

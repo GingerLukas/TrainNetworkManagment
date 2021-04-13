@@ -39,6 +39,7 @@ namespace TrainStation
             this._miTrainsNew = new System.Windows.Forms.ToolStripMenuItem();
             this._miTrainsRemoveAll = new System.Windows.Forms.ToolStripMenuItem();
             this._miSimulation = new System.Windows.Forms.ToolStripMenuItem();
+            this._miDemo = new System.Windows.Forms.ToolStripMenuItem();
             this._statusMain = new System.Windows.Forms.StatusStrip();
             this._statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this._seletedDetail = new TrainStation.SelectableDetail();
@@ -56,7 +57,8 @@ namespace TrainStation
             this._msMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._giNodes,
             this._giTrains,
-            this._miSimulation});
+            this._miSimulation,
+            this._miDemo});
             this._msMain.Location = new System.Drawing.Point(0, 0);
             this._msMain.Name = "_msMain";
             this._msMain.Size = new System.Drawing.Size(1082, 24);
@@ -108,8 +110,14 @@ namespace TrainStation
             // _miSimulation
             // 
             this._miSimulation.Name = "_miSimulation";
-            this._miSimulation.Size = new System.Drawing.Size(76, 20);
-            this._miSimulation.Text = "&Simulation";
+            this._miSimulation.Size = new System.Drawing.Size(50, 20);
+            this._miSimulation.Text = "&Select";
+            // 
+            // _miDemo
+            // 
+            this._miDemo.Name = "_miDemo";
+            this._miDemo.Size = new System.Drawing.Size(51, 20);
+            this._miDemo.Text = "Demo";
             // 
             // _statusMain
             // 
@@ -172,6 +180,7 @@ namespace TrainStation
         private System.Windows.Forms.ToolStripStatusLabel _statusLabel;
         private System.Windows.Forms.ToolStripMenuItem _miSimulation;
         private SelectableDetail _seletedDetail;
+        private System.Windows.Forms.ToolStripMenuItem _miDemo;
     }
 }
 

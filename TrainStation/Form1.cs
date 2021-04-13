@@ -14,6 +14,7 @@ namespace TrainStation
 {
     public partial class Form1 : Form
     {
+        private Random _random = new Random();
         private TrainNetwork _network = new TrainNetwork();
         
         private Point _mouse;
@@ -30,7 +31,7 @@ namespace TrainStation
             }
         }
         
-        private EControlMode __controlMode = EControlMode.Simulation;
+        private EControlMode __controlMode = EControlMode.Select;
         private ISelectable _selected = null;
 
         private EControlMode _controlMode
@@ -59,12 +60,18 @@ namespace TrainStation
             _miTrainsNew.Click += MiTrainsNewOnClick;
             _miTrainsRemoveAll.Click += MiTrainsRemoveAllOnClick;
             _miSimulation.Click += MiSimulationOnClick;
+            _miDemo.Click += MiDemoOnClick;
             
             _seletedDetail.ActionClicked += SeletedDetailOnActionClicked;
             
             UpdateStatus();
             
             _renderTimer.Start();
+        }
+
+        private void MiDemoOnClick(object? sender, EventArgs e)
+        {
+            GenerateDemo();
         }
 
         private void SeletedDetailOnActionClicked(object? sender, EventArgs e)
@@ -82,7 +89,7 @@ namespace TrainStation
 
         private void MiSimulationOnClick(object? sender, EventArgs e)
         {
-            _controlMode = EControlMode.Simulation;
+            _controlMode = EControlMode.Select;
         }
 
         private void MiNodesConnectOnClick(object? sender, EventArgs e)
@@ -92,6 +99,7 @@ namespace TrainStation
 
         private void MiTrainsRemoveAllOnClick(object? sender, EventArgs e)
         {
+            Selected = null;
             _network.Cancel();
             Invalidate();
         }
@@ -106,6 +114,82 @@ namespace TrainStation
         private void MiNodesBuildOnClick(object? sender, EventArgs e)
         {
             _controlMode = EControlMode.Node;
+        }
+
+        private void GenerateDemo()
+        {
+            _network.Clear();
+            Selected = null;
+
+            Node a = _network.AddNode("A", new Point(50, 100));
+            Node aConnector = _network.AddNode("A connector", new Point(100, 100));
+
+            Node b = _network.AddNode("B", new Point(50, 150));
+            Node bConnector = _network.AddNode("B connector", new Point(100, 150));
+
+            Node c = _network.AddNode("C", new Point(50, 200));
+            Node cConnector = _network.AddNode("C connector", new Point(100, 200));
+
+            Node abcJunction = _network.AddNode("ABC junction", new Point(150, 150));
+
+
+            Node mid = _network.AddNode("MID", new Point(150 + (500 - 150)/2, 150));
+            
+            
+            Node defJunction = _network.AddNode("DEF junction", new Point(500, 150));
+
+            Node d = _network.AddNode("D", new Point(600,100));
+            Node dConnector = _network.AddNode("D connector", new Point(550,100));
+            
+            Node e = _network.AddNode("E", new Point(600,150));
+            Node eConnector = _network.AddNode("E connector", new Point(550, 150));
+            
+            Node f = _network.AddNode("F", new Point(600,200));
+            Node fConnector = _network.AddNode("F connector", new Point(550, 200));
+
+
+            _network.Connect(a,aConnector);
+            _network.Connect(b,bConnector);
+            _network.Connect(c,cConnector);
+            
+            _network.Connect(aConnector,abcJunction);
+            _network.Connect(bConnector,abcJunction);
+            _network.Connect(cConnector,abcJunction);
+            
+            _network.Connect(abcJunction,mid);
+            _network.Connect(mid,defJunction);
+            
+            _network.Connect(defJunction,dConnector);
+            _network.Connect(defJunction,eConnector);
+            _network.Connect(defJunction,fConnector);
+            
+            _network.Connect(dConnector,d);
+            _network.Connect(eConnector,e);
+            _network.Connect(fConnector,f);
+            
+
+            Train aTrain = _network.AddTrain("Train A", a, 25);
+            Train bTrain =_network.AddTrain("Train B", b, 50);
+            Train cTrain = _network.AddTrain("Train C", c, 100);
+
+            Train aaTrain = _network.AddTrain("Train AA", aConnector, 25);
+            Train bbTrain = _network.AddTrain("Train BB", bConnector, 50);
+            Train ccTrain = _network.AddTrain("Train CC", cConnector, 100);
+
+            aTrain.Goal = f;
+            aaTrain.Goal = eConnector;
+            bTrain.Goal = d;
+            bbTrain.Goal = fConnector;
+            cTrain.Goal = e;
+            ccTrain.Goal = dConnector;
+            
+            _network.Start(aTrain);
+            _network.Start(aaTrain);
+            _network.Start(bTrain);
+            _network.Start(bbTrain);
+            _network.Start(cTrain);
+            _network.Start(ccTrain);
+
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -124,7 +208,7 @@ namespace TrainStation
 
             switch (__controlMode)
             {
-                case EControlMode.Simulation:
+                case EControlMode.Select:
                     break;
                 case EControlMode.Node:
                     if (_nearType != EClickableItem.Node)
@@ -143,7 +227,7 @@ namespace TrainStation
 
         enum EControlMode
         {
-            Simulation,
+            Select,
             Node,
             Rail,
             Train,
@@ -171,7 +255,7 @@ namespace TrainStation
             EClickableItem type;
             switch (_controlMode)
             {
-                case EControlMode.Simulation:
+                case EControlMode.Select:
                     if (Selected != null && _nearObj != null && Selected.Guid == _nearObj.Guid)
                     {
                         Selected = null;
@@ -211,6 +295,7 @@ namespace TrainStation
                     {
                         _network.AddTrain("new train " + _network.Trains.Count, (Node) _nearObj, 50);
                     }
+
                     break;
                 case EControlMode.TrainGoalSelect:
                     if (_nearObj is Node goal && Selected is Train)
@@ -218,7 +303,7 @@ namespace TrainStation
                         Train t = (Train)Selected;
                         t.Goal = goal;
                         _network.Start(t);
-                        _controlMode = EControlMode.Simulation;
+                        _controlMode = EControlMode.Select;
                     }
                     break;
             }
@@ -233,10 +318,4 @@ namespace TrainStation
         }
     }
 
-    enum EClickableItem
-    {
-        None,
-        Node,
-        Train
-    }
 }

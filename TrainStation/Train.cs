@@ -17,6 +17,10 @@ namespace TrainStation
 
         public event StateChangedHandler StateChanged;
 
+        public delegate void GoalReachedHandler(Train train, Node goal, bool success);
+
+        public event GoalReachedHandler GoalReached;
+
         private EState _state;
         public EState State
         {
@@ -54,6 +58,8 @@ namespace TrainStation
         private float _railDistance = 0;
         private EventWaitHandle _signalHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private Stack<Rail> _path;
+        public Stack<Rail> Path => _path;
+        public Rail CurrentRail => _currentRail;
 
 
         public Train(string name,Node node, float speed)
@@ -70,30 +76,39 @@ namespace TrainStation
         {
             if (_started)
             {
-                throw new Exception("Train is already on it's way");
+                return false;
+                //throw new Exception("Train is already on it's way");
             }
 
             if (Goal == null)
             {
-                throw new Exception("Goal was not set");
+                return false;
+                //throw new Exception("Goal was not set");
             }
             if (_lastNode.Guid == Goal.Guid)
             {
                 return false;
             }
-
-            List<Stack<Rail>> options = _lastNode.Find(Goal);
             
-            _path = options.OrderBy(x => x.Sum(rail => rail.Distance)).FirstOrDefault();
-            if (_path == null)
+            if (_path == null && !CalculatePath())
             {
-                throw new Exception("Path to goal could not be found");
+                return false;
+                //throw new Exception("Path to goal could not be found");
             }
 
             
             ThreadPool.QueueUserWorkItem(Move, token);
             
             return true;
+        }
+
+        public bool CalculatePath()
+        {
+            List<Stack<Rail>> options = _lastNode.Find(Goal);
+
+            _path = options.OrderBy(x => x.Sum(rail => rail.Distance)).FirstOrDefault();
+
+            return _path != null;
         }
 
         public void Signal(Rail rail)
@@ -109,6 +124,8 @@ namespace TrainStation
             if (_path == null || obj is not CancellationToken) return;
             CancellationToken token = (CancellationToken) obj;
             _started = true;
+
+            bool success = false;
             
             State = EState.Waiting;
             _currentRail = _path.Pop(); 
@@ -141,6 +158,7 @@ namespace TrainStation
                 _railDistance = 0;
                 if (_path.Count == 0 || token.IsCancellationRequested)
                 {
+                    success = !token.IsCancellationRequested;
                     break;
                 }
 
@@ -151,10 +169,12 @@ namespace TrainStation
                 State = EState.Running;
             }
 
-            State = EState.Idle;
+            Node g = Goal;
             _started = false;
             _path = null;
             Goal = null;
+            State = EState.Idle;
+            GoalReached?.Invoke(this, g, success);
         }
 
         private static Brush _normalBrush = Brushes.Blue;

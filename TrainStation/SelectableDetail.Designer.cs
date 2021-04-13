@@ -29,26 +29,17 @@ namespace TrainStation
         /// </summary>
         private void InitializeComponent()
         {
-            this._lblName = new System.Windows.Forms.Label();
             this._lblType = new System.Windows.Forms.Label();
             this._lbMain = new System.Windows.Forms.ListBox();
             this._btnAction = new System.Windows.Forms.Button();
             this._lblState = new System.Windows.Forms.Label();
+            this._txtName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // _lblName
-            // 
-            this._lblName.AutoSize = true;
-            this._lblName.Location = new System.Drawing.Point(0, 0);
-            this._lblName.Name = "_lblName";
-            this._lblName.Size = new System.Drawing.Size(39, 15);
-            this._lblName.TabIndex = 0;
-            this._lblName.Text = "Name";
             // 
             // _lblType
             // 
             this._lblType.AutoSize = true;
-            this._lblType.Location = new System.Drawing.Point(-1, 19);
+            this._lblType.Location = new System.Drawing.Point(1, 26);
             this._lblType.Name = "_lblType";
             this._lblType.Size = new System.Drawing.Size(31, 15);
             this._lblType.TabIndex = 1;
@@ -66,7 +57,7 @@ namespace TrainStation
             // 
             // _btnAction
             // 
-            this._btnAction.Location = new System.Drawing.Point(0, 55);
+            this._btnAction.Location = new System.Drawing.Point(1, 59);
             this._btnAction.Name = "_btnAction";
             this._btnAction.Size = new System.Drawing.Size(75, 23);
             this._btnAction.TabIndex = 3;
@@ -76,21 +67,29 @@ namespace TrainStation
             // _lblState
             // 
             this._lblState.AutoSize = true;
-            this._lblState.Location = new System.Drawing.Point(1, 37);
+            this._lblState.Location = new System.Drawing.Point(1, 41);
             this._lblState.Name = "_lblState";
             this._lblState.Size = new System.Drawing.Size(33, 15);
             this._lblState.TabIndex = 4;
             this._lblState.Text = "State";
             // 
+            // _txtName
+            // 
+            this._txtName.Location = new System.Drawing.Point(1, 0);
+            this._txtName.Name = "_txtName";
+            this._txtName.Size = new System.Drawing.Size(285, 23);
+            this._txtName.TabIndex = 5;
+            this._txtName.TextChanged += new System.EventHandler(this._txtName_TextChanged);
+            // 
             // SelectableDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this._txtName);
             this.Controls.Add(this._lblState);
             this.Controls.Add(this._btnAction);
             this.Controls.Add(this._lbMain);
             this.Controls.Add(this._lblType);
-            this.Controls.Add(this._lblName);
             this.Name = "SelectableDetail";
             this.Size = new System.Drawing.Size(286, 208);
             this.ResumeLayout(false);
@@ -99,11 +98,10 @@ namespace TrainStation
         }
 
         #endregion
-
-        private System.Windows.Forms.Label _lblName;
         private System.Windows.Forms.Label _lblType;
         private System.Windows.Forms.ListBox _lbMain;
         private System.Windows.Forms.Button _btnAction;
         private System.Windows.Forms.Label _lblState;
+        private System.Windows.Forms.TextBox _txtName;
     }
 }

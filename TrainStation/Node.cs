@@ -103,5 +103,10 @@ namespace TrainStation
             g.FillEllipse(_selectedBrush, Location.X - size / 2, Location.Y - size / 2, size, size);
             Render(g);
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
